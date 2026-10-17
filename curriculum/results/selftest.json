@@ -1,0 +1,146 @@
+{
+ "base": {
+  "levels": {
+   "L0": {
+    "n": 112,
+    "recall": 0.6161,
+    "low_n": false
+   },
+   "L1": {
+    "n": 271,
+    "recall": 0.2878,
+    "low_n": false
+   },
+   "L2": {
+    "n": 37,
+    "recall": 0.8378,
+    "low_n": false
+   },
+   "L3": {
+    "n": 25,
+    "recall": 0.92,
+    "low_n": true
+   },
+   "L4": {
+    "n": 206,
+    "recall": 0.3107,
+    "low_n": false
+   }
+  }
+ },
+ "weak": {
+  "levels": {
+   "L0": {
+    "n": 112,
+    "recall": 0.3036,
+    "low_n": false
+   },
+   "L1": {
+    "n": 271,
+    "recall": 0.2915,
+    "low_n": false
+   },
+   "L2": {
+    "n": 37,
+    "recall": 0.5946,
+    "low_n": false
+   },
+   "L3": {
+    "n": 25,
+    "recall": 0.96,
+    "low_n": true
+   },
+   "L4": {
+    "n": 206,
+    "recall": 0.1165,
+    "low_n": false
+   }
+  }
+ },
+ "s1_vs_s1_stage1": {
+  "stage": 1,
+  "target": "L1",
+  "sigma": 0.017,
+  "reasons": [
+   "L1 did not rise (0.2878 -> 0.2878)"
+  ],
+  "target_rises": false,
+  "L1": {
+   "base": 0.2878,
+   "cand": 0.2878,
+   "delta": 0.0
+  },
+  "earlier": {
+   "L0": {
+    "base": 0.6161,
+    "cand": 0.6161,
+    "drop": 0.0,
+    "violates": false
+   }
+  },
+  "pass": false
+ },
+ "s1_vs_weak_stage1": {
+  "stage": 1,
+  "target": "L1",
+  "sigma": 0.017,
+  "reasons": [
+   "L0 dropped 0.3125 > sigma 0.017"
+  ],
+  "target_rises": true,
+  "L1": {
+   "base": 0.2878,
+   "cand": 0.2915,
+   "delta": 0.0037
+  },
+  "earlier": {
+   "L0": {
+    "base": 0.6161,
+    "cand": 0.3036,
+    "drop": 0.3125,
+    "violates": true
+   }
+  },
+  "pass": false
+ },
+ "s1_vs_weak_stage4": {
+  "stage": 4,
+  "target": "L4",
+  "sigma": 0.017,
+  "reasons": [
+   "L4 did not rise (0.3107 -> 0.1165)",
+   "L0 dropped 0.3125 > sigma 0.017",
+   "L2 dropped 0.2432 > sigma 0.017"
+  ],
+  "target_rises": false,
+  "L4": {
+   "base": 0.3107,
+   "cand": 0.1165,
+   "delta": -0.1942
+  },
+  "earlier": {
+   "L0": {
+    "base": 0.6161,
+    "cand": 0.3036,
+    "drop": 0.3125,
+    "violates": true
+   },
+   "L1": {
+    "base": 0.2878,
+    "cand": 0.2915,
+    "drop": -0.0037,
+    "violates": false
+   },
+   "L2": {
+    "base": 0.8378,
+    "cand": 0.5946,
+    "drop": 0.2432,
+    "violates": true
+   },
+   "L3": {
+    "status": "not-scored (low_n or missing)"
+   }
+  },
+  "pass": false
+ }
+}

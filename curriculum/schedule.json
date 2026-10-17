@@ -1,0 +1,204 @@
+{
+ "seed": 1013,
+ "design": "helix (circular): pass k = all train rows of level k + review sample of every level < k + preview of level k+1",
+ "review_frac": 0.15,
+ "preview_frac": 0.1,
+ "min_sample": 20,
+ "level_sha256": {
+  "L0": "030e5588a50f5b6d9eeb0e9b26013f20e1fa0ab23180545fef5d6fbc91da5465",
+  "L1": "39226ac8832ce08d1661d5459972f9189019a8ac746e7944d4844b36d0ff35cd",
+  "L2": "51669fc54047be111468983e1bc9829692bf94825b70b73043f1a021ffb4eae8",
+  "L3": "bef5bae71f502d7edf2f50ffc1d02d46361c4e03869b92553fbe40a962d9306d",
+  "L4": "1b36a667928d75271391c67680eebb74b95c86d64c661e80ee1c619675abaa23"
+ },
+ "passes": [
+  {
+   "pass": 0,
+   "level": "L0",
+   "gate": {
+    "target": "L0",
+    "earlier": [],
+    "sigma": 0.017
+   },
+   "parts": [
+    {
+     "role": "focus",
+     "level": "L0",
+     "n": 483,
+     "seed": "1013:0:focus:L0"
+    },
+    {
+     "role": "preview",
+     "level": "L1",
+     "n": 90,
+     "seed": "1013:0:preview:L1"
+    }
+   ],
+   "next": "L1"
+  },
+  {
+   "pass": 1,
+   "level": "L1",
+   "gate": {
+    "target": "L1",
+    "earlier": [
+     "L0"
+    ],
+    "sigma": 0.017
+   },
+   "parts": [
+    {
+     "role": "focus",
+     "level": "L1",
+     "n": 899,
+     "seed": "1013:1:focus:L1"
+    },
+    {
+     "role": "review",
+     "level": "L0",
+     "n": 72,
+     "seed": "1013:1:review:L0"
+    },
+    {
+     "role": "preview",
+     "level": "L2",
+     "n": 20,
+     "seed": "1013:1:preview:L2"
+    }
+   ],
+   "next": "L2"
+  },
+  {
+   "pass": 2,
+   "level": "L2",
+   "gate": {
+    "target": "L2",
+    "earlier": [
+     "L0",
+     "L1"
+    ],
+    "sigma": 0.017
+   },
+   "parts": [
+    {
+     "role": "focus",
+     "level": "L2",
+     "n": 154,
+     "seed": "1013:2:focus:L2"
+    },
+    {
+     "role": "review",
+     "level": "L0",
+     "n": 72,
+     "seed": "1013:2:review:L0"
+    },
+    {
+     "role": "review",
+     "level": "L1",
+     "n": 135,
+     "seed": "1013:2:review:L1"
+    },
+    {
+     "role": "preview",
+     "level": "L3",
+     "n": 20,
+     "seed": "1013:2:preview:L3"
+    }
+   ],
+   "next": "L3"
+  },
+  {
+   "pass": 3,
+   "level": "L3",
+   "gate": {
+    "target": "L3",
+    "earlier": [
+     "L0",
+     "L1",
+     "L2"
+    ],
+    "sigma": 0.017
+   },
+   "parts": [
+    {
+     "role": "focus",
+     "level": "L3",
+     "n": 113,
+     "seed": "1013:3:focus:L3"
+    },
+    {
+     "role": "review",
+     "level": "L0",
+     "n": 72,
+     "seed": "1013:3:review:L0"
+    },
+    {
+     "role": "review",
+     "level": "L1",
+     "n": 135,
+     "seed": "1013:3:review:L1"
+    },
+    {
+     "role": "review",
+     "level": "L2",
+     "n": 23,
+     "seed": "1013:3:review:L2"
+    },
+    {
+     "role": "preview",
+     "level": "L4",
+     "n": 128,
+     "seed": "1013:3:preview:L4"
+    }
+   ],
+   "next": "L4"
+  },
+  {
+   "pass": 4,
+   "level": "L4",
+   "gate": {
+    "target": "L4",
+    "earlier": [
+     "L0",
+     "L1",
+     "L2",
+     "L3"
+    ],
+    "sigma": 0.017
+   },
+   "parts": [
+    {
+     "role": "focus",
+     "level": "L4",
+     "n": 1276,
+     "seed": "1013:4:focus:L4"
+    },
+    {
+     "role": "review",
+     "level": "L0",
+     "n": 72,
+     "seed": "1013:4:review:L0"
+    },
+    {
+     "role": "review",
+     "level": "L1",
+     "n": 135,
+     "seed": "1013:4:review:L1"
+    },
+    {
+     "role": "review",
+     "level": "L2",
+     "n": 23,
+     "seed": "1013:4:review:L2"
+    },
+    {
+     "role": "review",
+     "level": "L3",
+     "n": 20,
+     "seed": "1013:4:review:L3"
+    }
+   ],
+   "next": "L5 (not built: slot reserved; the circle closes when L5 exists)"
+  }
+ ]
+}

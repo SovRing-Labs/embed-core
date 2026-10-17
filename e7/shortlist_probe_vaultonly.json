@@ -1,0 +1,21 @@
+{
+ "queries_evaluated": 200,
+ "core_recall_at": {
+  "5": 0.435,
+  "10": 0.51,
+  "25": 0.595,
+  "50": 0.685,
+  "100": 0.755,
+  "200": 0.83
+ },
+ "core_shortlist50_reranked_by_nomic_at5": 0.5,
+ "fts_shortlist50_reranked_by_nomic_at5": 0.72,
+ "registered_baselines": {
+  "fts_only": 0.735,
+  "nomic_only": 0.685,
+  "fts_nomic_hybrid": 0.79
+ },
+ "bar": 0.775,
+ "probe_seconds": 121.7,
+ "shortlist_could_pass_bar": false
+}

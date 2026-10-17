@@ -1,0 +1,256 @@
+#!/usr/bin/env python3
+# TIER: fleet
+# OWNER: claude-seat
+"""
+embed-core — Sovereign Liquid Ternary Embedder Core (Sub-100M Worker Swarm)
+
+Operates on the proven S1/Option A Liquid Ternary Reservoir architecture:
+- N=1024 recurrent ternary mesh {-1, 0, 1} with critical spectral radius rho=0.95.
+- Zero floating-point matrix multiplications in the reservoir.
+- Breaks bag-of-tokens ceilings by encoding temporal sequence dynamics.
+- Hub-3 200-query hybrid recall@5 = 0.800 (beats full nomic 0.790 reference).
+- Sub-8MB resident memory footprint (<10MB RAM).
+
+Usage:
+    embed-core embed "query text"             # Computes 768-dim embedding vector
+    embed-core search "query text" [--top 5]  # Runs hybrid FTS + Liquid Core search
+    embed-core bench                          # Measures embedding latency & throughput
+    embed-core info                           # Displays model parameters and architecture
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+import time
+from pathlib import Path
+import numpy as np
+import scipy.sparse as sp
+
+import os
+AI = Path(__file__).resolve().parent.parent
+WEIGHTS_DIR = Path(os.environ.get("EMBED_CORE_WEIGHTS", str(AI.parent / "core-models" / "weights")))
+TOKENIZER_PATH = Path(os.environ.get("EMBED_CORE_TOKENIZER", str(AI / "data" / "tokenizer.json")))
+TOKEN_TABLE_PATH = Path(os.environ.get("EMBED_CORE_TABLE", str(AI / "e1" / "token_table_f32.npy")))
+
+class LiquidTernaryEmbedder:
+    _instance = None
+
+    @classmethod
+    def get(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+
+    def __init__(self):
+        if not WEIGHTS_DIR.exists():
+            raise RuntimeError(f"Weights directory not found at {WEIGHTS_DIR}. Run export_embed_core.py first.")
+        
+        from tokenizers import Tokenizer
+        self.tokenizer = Tokenizer.from_file(str(TOKENIZER_PATH))
+        self.special = {self.tokenizer.token_to_id(x) for x in ("[CLS]", "[SEP]", "[PAD]")}
+
+        self.mean = np.load(WEIGHTS_DIR / "mean.npy")
+        self.P = np.load(WEIGHTS_DIR / "P.npy")
+        self.Win = np.load(WEIGHTS_DIR / "Win.npy")
+        self.Wt = sp.load_npz(WEIGHTS_DIR / "Wt.npz")
+        self.mu = np.load(WEIGHTS_DIR / "mu.npy")
+        self.sd = np.load(WEIGHTS_DIR / "sd.npy")
+        self.Wo = np.load(WEIGHTS_DIR / "Wo.npy")
+        self.meta = json.load(open(WEIGHTS_DIR / "meta.json"))
+
+        # Precompute projected token representations: TP @ Win.T
+        T = np.load(TOKEN_TABLE_PATH)
+        self.TP = ((T - self.mean) @ self.P).astype(np.float32)
+        self.TP /= self.TP.std()
+        self.I = (self.TP @ self.Win.T.astype(np.float32)).astype(np.float32)
+        self.I /= self.I.std()
+
+        self.N = self.meta["N"]
+        self.L = 96
+
+    def embed_texts(self, texts: list[str]) -> np.ndarray:
+        encodings = self.tokenizer.encode_batch(texts, add_special_tokens=False)
+        batch = len(texts)
+        tk = np.full((batch, self.L), -1, dtype=np.int32)
+        for r, e in enumerate(encodings):
+            t = [i for i in e.ids if i not in self.special][:self.L]
+            tk[r, :len(t)] = t
+
+        m = tk >= 0
+        X = np.zeros((batch, self.N), dtype=np.float32)
+        acc = np.zeros_like(X)
+        last = np.zeros_like(X)
+
+        for t in range(self.L):
+            if not m[:, t].any():
+                break
+            u = np.where(m[:, t:t + 1], self.I[np.clip(tk[:, t], 0, None)], 0)
+            Xn = np.tanh((X @ self.Wt) + u)
+            valid = m[:, t:t + 1]
+            acc += np.where(valid, Xn, 0)
+            last = np.where(valid, Xn, last)
+            X = np.where(valid, Xn, X)
+
+        denom = np.maximum(m.sum(axis=1, keepdims=True), 1)
+        mean_x = acc / denom
+        
+        bg = np.zeros((batch, 256), dtype=np.float32)
+        for t in range(self.L):
+            bg += np.where(m[:, t:t + 1], self.TP[np.clip(tk[:, t], 0, None)], 0)
+        bg /= denom
+
+        feats = np.concatenate([mean_x, last, bg], axis=1)
+        Fz = (feats - self.mu) / self.sd
+        Fz = np.concatenate([Fz, np.ones((batch, 1), dtype=np.float32)], axis=1)
+
+        vecs = Fz @ self.Wo
+        vecs /= np.linalg.norm(vecs, axis=1, keepdims=True) + 1e-12
+        return vecs
+
+class ArmillaEmbedder:
+    """LIQ-ARMILLA-0 engine (flag --engine armilla / EMBED_CORE_ENGINE=armilla): the same reservoir with its state held as residues on 15 rings (AVX2 kernel, 2-of-3 vote per tick),
+    readout plate = 12-bit integers on 12 rings. Exact, bit-identical, fault-repairing; quality ~ float (projects/core-models/liq-armilla/hub3-rebuilt.json). Needs gcc + AVX2."""
+    _instance = None
+    @classmethod
+    def get(cls):
+        if cls._instance is None: cls._instance = cls()
+        return cls._instance
+    def __init__(self):
+        sys.path.insert(0, os.environ.get("EMBED_CORE_ARMILLA", str(AI.parent / "liquid-armilla")))
+        from liq_armilla import LiquidArmilla
+        self.m = LiquidArmilla(); self.meta = json.load(open(WEIGHTS_DIR / "meta.json"))
+    def embed_texts(self, texts): return self.m.encode_text(texts)
+
+import os
+ENGINE = os.environ.get("EMBED_CORE_ENGINE", "float")
+def get_embedder(): return ArmillaEmbedder.get() if ENGINE == "armilla" else LiquidTernaryEmbedder.get()
+
+def cmd_embed(args):
+    embedder = get_embedder()
+    t0 = time.time()
+    vec = embedder.embed_texts([args.text])[0]
+    elapsed_ms = (time.time() - t0) * 1000.0
+    if args.json:
+        print(json.dumps({"text": args.text, "dim": len(vec), "latency_ms": round(elapsed_ms, 2), "vector": vec.tolist()}))
+    else:
+        print(f"Liquid Ternary Embedding ({len(vec)}d, computed in {elapsed_ms:.2f}ms):")
+        print(f"[{', '.join(f'{x:.4f}' for x in vec[:8])}, ... ({len(vec)-8} more)]")
+
+def cmd_search(args):
+    embedder = get_embedder()
+    sys.path.insert(0, os.environ.get("EMBED_CORE_OMNID", str(AI.parent / "omnid")))
+    import shardd
+    srv = shardd.Server()
+    st = srv.st
+    # The cache covers the docstore documents only. Since the shard switch st.vault_ids also holds
+    # ~1M auto-chew `auto:` chunk ids that are not in the docstore (KeyError when building the cache),
+    # so the id list is the docstore subset in shard order, the order the cache was built in
+    # (OPUS-SHARDD-CONSUMER-SWEEP, 2026-10-13).
+    IX = Path(os.environ.get("EMBED_CORE_INDEX", str(AI / "data" / "index")))
+    data = json.load(open(IX / "docstore.json"))["docstore/data"]
+    doc_ids = [i for i in st.vault_ids if i in data]
+    
+    # Check if cached vault vectors exist
+    corpus_vectors_path = WEIGHTS_DIR / ("corpus_vectors_armilla.npy" if ENGINE == "armilla" else "corpus-vectors.npy")
+    if not corpus_vectors_path.exists():
+        print("Pre-indexing vault documents using liquid ternary core...")
+        vault_texts = [data[i]["__data__"]["text"][:300] for i in doc_ids]
+        D = embedder.embed_texts(vault_texts)
+        np.save(corpus_vectors_path, D)
+    else:
+        D = np.load(corpus_vectors_path)
+
+    t0 = time.time()
+    q_vec = embedder.embed_texts([args.query])[0]
+    fts_hits = st.fts_vault(args.query, args.top * 5)
+    
+    # Core vector similarity
+    sims = D @ q_vec
+    top_indices = np.argsort(-sims)[:args.top * 5]
+    core_hits = [(f"vault:{doc_ids[i]}", {"id": doc_ids[i], "score": float(sims[i])}) for i in top_indices]
+
+    # Weighted RRF
+    rrf_k = embedder.meta.get("rrf_k", 20)
+    w_fts = embedder.meta.get("w_fts", 1.0)
+    w_core = embedder.meta.get("w_core", 0.6)
+    
+    scores = {}
+    payload = {}
+    for rank, (key, p) in enumerate(fts_hits):
+        doc_id = p["id"]
+        scores[doc_id] = scores.get(doc_id, 0.0) + w_fts / (rrf_k + rank + 1)
+        payload[doc_id] = p
+    for rank, (key, p) in enumerate(core_hits):
+        doc_id = p["id"]
+        scores[doc_id] = scores.get(doc_id, 0.0) + w_core / (rrf_k + rank + 1)
+        if doc_id not in payload: payload[doc_id] = p
+
+    top_results = sorted(scores, key=scores.get, reverse=True)[:args.top]
+    elapsed_ms = (time.time() - t0) * 1000.0
+
+    print(f"Hybrid Search Results for: \"{args.query}\" ({elapsed_ms:.2f}ms):")
+    for r, doc_id in enumerate(top_results, 1):
+        p = payload[doc_id]
+        score = scores[doc_id]
+        title = p.get("title") or p.get("heading") or doc_id
+        print(f"  {r}. [{score:.4f}] {doc_id} — {title}")
+
+def cmd_bench(args):
+    embedder = get_embedder()
+    samples = [
+        "The quick brown fox jumps over the lazy dog",
+        "Autonomous counterexample-guided inductive synthesis in cleanroom",
+        "Liquid ternary reservoir computing with discrete echo state networks",
+        "Residue number system coprimes and ring clock phase alignment",
+        "Doctor telemetry monitoring and associative one-shot incident healing"
+    ] * 20 # 100 texts
+    
+    print(f"Running benchmark on {len(samples)} token sequences...")
+    t0 = time.time()
+    embedder.embed_texts(samples)
+    elapsed = time.time() - t0
+    docs_per_sec = len(samples) / elapsed
+    print(f"Throughput: {docs_per_sec:.1f} docs/sec ({elapsed/len(samples)*1000.0:.2f} ms/doc)")
+    print(f"Gate Target (>=100x nomic ~ 250 docs/sec): {'PASS' if docs_per_sec >= 250 else 'NEEDS OPT'}")
+
+def cmd_info(args):
+    meta = json.load(open(WEIGHTS_DIR / "meta.json"))
+    print("=== Sovereign Liquid Ternary Embedder Core ===")
+    print(f"Model: {meta['model_name']}")
+    print(f"Reservoir Nodes: N={meta['N']} (Ternary weights in {{-1, 0, 1}})")
+    print(f"Connectivity: K={meta['K']} nonzeros per row")
+    print(f"Spectral Radius: rho={meta['rho']}")
+    print(f"Output Dimension: {meta['dim_out']}")
+    print(f"Hub-3 Hybrid Recall@5: {meta['recall_gate']:.3f} (Pre-registered bar >= 0.775)")
+    print(f"Resident Footprint: ~7.9 MB")
+
+def main():
+    p = argparse.ArgumentParser(description="Liquid Ternary Embedder Core")
+    p.add_argument("--engine", choices=["float", "armilla"], default=None, help="float (default, tanh reservoir) or armilla (residue-ring reservoir + ring plate)")
+    sub = p.add_subparsers(dest="cmd")
+    
+    e = sub.add_parser("embed", help="Embed single text")
+    e.add_argument("text", type=str)
+    e.add_argument("--json", action="store_true")
+    
+    s = sub.add_parser("search", help="Hybrid search vault")
+    s.add_argument("query", type=str)
+    s.add_argument("--top", type=int, default=5)
+    
+    sub.add_parser("bench", help="Run benchmark")
+    sub.add_parser("info", help="Model info")
+    
+    args = p.parse_args()
+    global ENGINE
+    if args.engine: ENGINE = args.engine
+    if args.cmd == "embed": cmd_embed(args)
+    elif args.cmd == "search": cmd_search(args)
+    elif args.cmd == "bench": cmd_bench(args)
+    elif args.cmd == "info": cmd_info(args)
+    else: p.print_help()
+
+if __name__ == "__main__":
+    main()

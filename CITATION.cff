@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "Please cite this pre-alpha research snapshot."
+title: "embed-core: Static token-table embedding, ternary readouts and curriculum regression gates."
+version: 0.1.0
+date-released: 2026-10-16
+authors:
+  - family-names: "De Santiago"
+    given-names: "Juan Carlos"
+repository-code: "https://github.com/SovRing-Labs/embed-core"
+license:
+  - LicenseRef-PolyForm-Small-Business-1.0.0
+  - PolyForm-Noncommercial-1.0.0
+  - CC-BY-4.0
+  - LicenseRef-Free-Trial

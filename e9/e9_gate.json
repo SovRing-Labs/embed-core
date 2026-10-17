@@ -1,0 +1,16 @@
+{
+ "core_only": 0.55,
+ "fts_only": 0.735,
+ "hybrid_fts_core": 0.745,
+ "nomic_only": 0.995,
+ "core_docs_per_s": 276.6,
+ "speedup_vs_nomic": 238.4,
+ "leak_mean": 1.0032,
+ "bar_recall": 0.775,
+ "bar_speed": 100,
+ "calibration_fts_only_expected": 0.735,
+ "gate_seconds": 6.1,
+ "PASS": false,
+ "calibration_ok": true,
+ "verdict": "FAIL"
+}

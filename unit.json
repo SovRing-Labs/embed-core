@@ -1,0 +1,16 @@
+{
+  "repo": "embed-core",
+  "group": "core",
+  "lang": "Python",
+  "stage": "about 70 %",
+  "needs": [
+    "python3",
+    "numpy and scipy for the CLI boundary check"
+  ],
+  "deps": "",
+  "quicktest": "python3 -B checks/curriculum.py",
+  "expect": "PASS",
+  "gui": "bash install.sh",
+  "licence": "PolyForm Small Business 1.0.0 OR PolyForm Noncommercial 1.0.0 + Free Trial (code); CC BY 4.0 (documents)",
+  "pip": []
+}

@@ -1,0 +1,145 @@
+{
+  "_about": {
+    "repo": "embed-core",
+    "url": "https://github.com/SovRing-Labs/embed-core",
+    "one_line": "Static token-table embedding, ternary readouts and curriculum regression gates.",
+    "quicktest": "python3 -B checks/curriculum.py",
+    "quicktest_s": 60,
+    "licence": "PolyForm Small Business 1.0.0 OR PolyForm Noncommercial 1.0.0 + Free Trial (code); CC BY 4.0 (documents)",
+    "status_file": "STATUS.md",
+    "generated": "2026-10-17",
+    "schema": 1,
+    "stage": "about 70 %"
+  },
+  "tests": [
+    {
+      "id": "E1",
+      "title": "Curriculum gate accepts a rise and rejects regressions",
+      "claim": "The existing judge accepts an isolated L1 rise and rejects no-rise, earlier regression, low sample count and missing target.",
+      "kind": "run",
+      "verify": "python3 -B checks/curriculum.py",
+      "expect": "PASS",
+      "evidence": [
+        "checks/curriculum.py",
+        "curriculum/gate.py",
+        "curriculum/results/base-s1.json",
+        "results/2026-10-17-quick.log"
+      ],
+      "runtime_s": 40,
+      "needs": [
+        "python3"
+      ],
+      "cpu_flags": [],
+      "what_it_means": "The existing judge accepts an isolated L1 rise and rejects no-rise, earlier regression, low sample count and missing target. This tests gate decisions on recorded scores, not embedding inference.",
+      "how_we_got_it": "Run the shipped check on an Intel i5-8365U laptop, 2026-10-17; output in results/2026-10-17-quick.log.",
+      "use_in_your_work": "Use the runnable checks to assess changes while keeping model/data prerequisites explicit.",
+      "honest_limits": "This tests gate decisions on recorded scores, not embedding inference."
+    },
+    {
+      "id": "E2",
+      "title": "Static E4 retrieval failure stays visible",
+      "claim": "Historical static E4 hybrid recall is 0.555 versus FTS 0.735; its preregistered gate failed.",
+      "kind": "file",
+      "verify": "python3 -B -c 'import json; d=json.load(open('\"'\"'e4/result.json'\"'\"')); assert d['\"'\"'PASS'\"'\"'] is False and d['\"'\"'hybrid_fts_core'\"'\"']==0.555 and d['\"'\"'fts_only'\"'\"']==0.735; print('\"'\"'PASS'\"'\"')'",
+      "expect": "PASS",
+      "evidence": [
+        "e4/result.json"
+      ],
+      "runtime_s": 1,
+      "needs": [
+        "python3"
+      ],
+      "cpu_flags": [],
+      "what_it_means": "Historical static E4 hybrid recall is 0.555 versus FTS 0.735; its preregistered gate failed. Historical aggregate recheck only.",
+      "how_we_got_it": "Read the aggregate historical result named in evidence; no original training inputs or query text are included.",
+      "use_in_your_work": "Use the runnable checks to assess changes while keeping model/data prerequisites explicit.",
+      "honest_limits": "Historical aggregate recheck only."
+    },
+    {
+      "id": "E3",
+      "title": "Held-out E5 retrieval failure stays visible",
+      "claim": "Historical E5 hold-out hybrid recall is 0.640 and the preregistered gate failed.",
+      "kind": "file",
+      "verify": "python3 -B -c 'import json; d=json.load(open('\"'\"'e5/result-l0.0001-s150-holdout.json'\"'\"')); assert not d['\"'\"'PASS_prereg_bar'\"'\"'] and d['\"'\"'hybrid_fts_core_learned'\"'\"']==0.64; print('\"'\"'PASS'\"'\"')'",
+      "expect": "PASS",
+      "evidence": [
+        "e5/result-l0.0001-s150-holdout.json"
+      ],
+      "runtime_s": 1,
+      "needs": [
+        "python3"
+      ],
+      "cpu_flags": [],
+      "what_it_means": "Historical E5 hold-out hybrid recall is 0.640 and the preregistered gate failed. No private fitset or fitted table ships.",
+      "how_we_got_it": "Read the aggregate historical result named in evidence; no original training inputs or query text are included.",
+      "use_in_your_work": "Use the runnable checks to assess changes while keeping model/data prerequisites explicit.",
+      "honest_limits": "No private fitset or fitted table ships."
+    },
+    {
+      "id": "E4",
+      "title": "E9 gate remains a negative",
+      "claim": "Historical E9 hybrid recall 0.745 missed the 0.775 gate.",
+      "kind": "file",
+      "verify": "python3 -B -c 'import json; d=json.load(open('\"'\"'e9/e9_gate.json'\"'\"')); assert not d['\"'\"'PASS'\"'\"'] and d['\"'\"'hybrid_fts_core'\"'\"']==0.745; print('\"'\"'PASS'\"'\"')'",
+      "expect": "PASS",
+      "evidence": [
+        "e9/e9_gate.json"
+      ],
+      "runtime_s": 1,
+      "needs": [
+        "python3"
+      ],
+      "cpu_flags": [],
+      "what_it_means": "Historical E9 hybrid recall 0.745 missed the 0.775 gate. Not a rerun of the teacher or model.",
+      "how_we_got_it": "Read the aggregate historical result named in evidence; no original training inputs or query text are included.",
+      "use_in_your_work": "Use the runnable checks to assess changes while keeping model/data prerequisites explicit.",
+      "honest_limits": "Not a rerun of the teacher or model."
+    },
+    {
+      "id": "E5",
+      "title": "Model and curriculum inference",
+      "claim": "Full embedding and retrieval need separately supplied weights, tokenizer, data and services.",
+      "kind": "external",
+      "verify": "python3 curriculum/gate.py selftest",
+      "expect": "PASS",
+      "evidence": [
+        "DATA.md",
+        "bin/embed-core"
+      ],
+      "runtime_s": 1,
+      "needs": [
+        "python3",
+        "user-owned model weights and corpus",
+        "external tokenizer and services"
+      ],
+      "cpu_flags": [],
+      "what_it_means": "Full embedding and retrieval need separately supplied weights, tokenizer, data and services. Not runnable with this export alone.",
+      "how_we_got_it": "Read the aggregate historical result named in evidence; no original training inputs or query text are included.",
+      "use_in_your_work": "Use the runnable checks to assess changes while keeping model/data prerequisites explicit.",
+      "honest_limits": "Not runnable with this export alone."
+    },
+    {
+      "id": "E6",
+      "title": "CLI parser and missing-model boundary",
+      "claim": "The CLI parser runs, and inference reports absent weights at the configured external path.",
+      "kind": "run",
+      "verify": "python3 -B checks/cli.py",
+      "expect": "PASS",
+      "evidence": [
+        "checks/cli.py",
+        "bin/embed-core"
+      ],
+      "runtime_s": 40,
+      "needs": [
+        "python3",
+        "numpy",
+        "scipy"
+      ],
+      "cpu_flags": [],
+      "what_it_means": "The exported CLI works through argument parsing and reports its external model dependency clearly.",
+      "how_we_got_it": "Execute parser help and inference with EMBED_CORE_WEIGHTS pointing at an empty temporary directory; no model or corpus is loaded.",
+      "use_in_your_work": "Use the runnable checks to assess changes while keeping model/data prerequisites explicit.",
+      "honest_limits": "Checks CLI wiring, not embedding quality or speed."
+    }
+  ]
+}

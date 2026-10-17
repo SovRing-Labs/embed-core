@@ -1,0 +1,12 @@
+{
+ "core_only": 0.425,
+ "hybrid_fts_core": 0.6,
+ "fts_only": 0.735,
+ "table": "e6/table_l0.0001_s300.npy",
+ "target_doc_cos_vs_nomic (never fitted)": 0.9228,
+ "core_docs_per_s": 713.6,
+ "speedup_vs_nomic": 615,
+ "query_p50_ms": 3.96,
+ "bar": "hybrid_fts_core >= 0.775 and >= 100x nomic",
+ "PASS_prereg_bar": false
+}

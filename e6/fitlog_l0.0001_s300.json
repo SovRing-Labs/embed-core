@@ -1,0 +1,171 @@
+[
+ {
+  "step": 0,
+  "loss": 0.3303,
+  "fit_cos": {
+   "vault": 0.7115,
+   "sessions": 0.6933
+  },
+  "heldout_cos": {
+   "vault": 0.7118,
+   "sessions": 0.6933
+  },
+  "secs": 1
+ },
+ {
+  "step": 25,
+  "loss": 0.1214,
+  "fit_cos": {
+   "vault": 0.8876,
+   "sessions": 0.8778
+  },
+  "heldout_cos": {
+   "vault": 0.8798,
+   "sessions": 0.8714
+  },
+  "secs": 18
+ },
+ {
+  "step": 50,
+  "loss": 0.0786,
+  "fit_cos": {
+   "vault": 0.9327,
+   "sessions": 0.9183
+  },
+  "heldout_cos": {
+   "vault": 0.9185,
+   "sessions": 0.904
+  },
+  "secs": 35
+ },
+ {
+  "step": 75,
+  "loss": 0.0542,
+  "fit_cos": {
+   "vault": 0.9548,
+   "sessions": 0.943
+  },
+  "heldout_cos": {
+   "vault": 0.9339,
+   "sessions": 0.9187
+  },
+  "secs": 53
+ },
+ {
+  "step": 100,
+  "loss": 0.0406,
+  "fit_cos": {
+   "vault": 0.9662,
+   "sessions": 0.9572
+  },
+  "heldout_cos": {
+   "vault": 0.939,
+   "sessions": 0.9225
+  },
+  "secs": 70
+ },
+ {
+  "step": 125,
+  "loss": 0.0323,
+  "fit_cos": {
+   "vault": 0.9729,
+   "sessions": 0.9662
+  },
+  "heldout_cos": {
+   "vault": 0.9396,
+   "sessions": 0.9217
+  },
+  "secs": 87
+ },
+ {
+  "step": 150,
+  "loss": 0.0266,
+  "fit_cos": {
+   "vault": 0.9773,
+   "sessions": 0.9723
+  },
+  "heldout_cos": {
+   "vault": 0.9382,
+   "sessions": 0.9186
+  },
+  "secs": 104
+ },
+ {
+  "step": 175,
+  "loss": 0.0226,
+  "fit_cos": {
+   "vault": 0.9805,
+   "sessions": 0.9768
+  },
+  "heldout_cos": {
+   "vault": 0.9357,
+   "sessions": 0.9142
+  },
+  "secs": 121
+ },
+ {
+  "step": 200,
+  "loss": 0.0195,
+  "fit_cos": {
+   "vault": 0.983,
+   "sessions": 0.9801
+  },
+  "heldout_cos": {
+   "vault": 0.9325,
+   "sessions": 0.9091
+  },
+  "secs": 138
+ },
+ {
+  "step": 225,
+  "loss": 0.0171,
+  "fit_cos": {
+   "vault": 0.985,
+   "sessions": 0.9827
+  },
+  "heldout_cos": {
+   "vault": 0.9289,
+   "sessions": 0.9034
+  },
+  "secs": 155
+ },
+ {
+  "step": 250,
+  "loss": 0.0152,
+  "fit_cos": {
+   "vault": 0.9865,
+   "sessions": 0.9848
+  },
+  "heldout_cos": {
+   "vault": 0.925,
+   "sessions": 0.8975
+  },
+  "secs": 172
+ },
+ {
+  "step": 275,
+  "loss": 0.0137,
+  "fit_cos": {
+   "vault": 0.9878,
+   "sessions": 0.9865
+  },
+  "heldout_cos": {
+   "vault": 0.9211,
+   "sessions": 0.8915
+  },
+  "secs": 190
+ },
+ {
+  "step": 299,
+  "loss": 0.0125,
+  "fit_cos": {
+   "vault": 0.9889,
+   "sessions": 0.9878
+  },
+  "heldout_cos": {
+   "vault": 0.9173,
+   "sessions": 0.8857
+  },
+  "secs": 206
+ }
+]

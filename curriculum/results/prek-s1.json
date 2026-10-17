@@ -1,0 +1,49 @@
+{
+ "embedder": "s1",
+ "rows": 192,
+ "metric": "acc = cos(q,pos) > cos(q,hard neg); margin = mean cos gap",
+ "card": {
+  "code-prose": {
+   "n": 28,
+   "acc": 0.857,
+   "margin": 0.1,
+   "cos_pos": 0.651
+  },
+  "exact-dup": {
+   "n": 28,
+   "acc": 1.0,
+   "margin": 0.431,
+   "cos_pos": 1.0
+  },
+  "multilingual": {
+   "n": 28,
+   "acc": 0.571,
+   "margin": 0.051,
+   "cos_pos": 0.724
+  },
+  "near-dup": {
+   "n": 28,
+   "acc": 1.0,
+   "margin": 0.38,
+   "cos_pos": 0.99
+  },
+  "numbers-ids": {
+   "n": 28,
+   "acc": 0.857,
+   "margin": 0.007,
+   "cos_pos": 0.766
+  },
+  "paraphrase": {
+   "n": 24,
+   "acc": 0.917,
+   "margin": 0.165,
+   "cos_pos": 0.747
+  },
+  "short-long": {
+   "n": 28,
+   "acc": 0.679,
+   "margin": 0.05,
+   "cos_pos": 0.679
+  }
+ }
+}

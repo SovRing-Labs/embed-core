@@ -1,0 +1,19 @@
+{
+ "nomic_only": 0.685,
+ "hybrid_fts_nomic": 0.79,
+ "core_only": 0.355,
+ "hybrid_fts_core": 0.555,
+ "core256_only": 0.315,
+ "core_tern_only": 0.325,
+ "hybrid_fts_core_tern": 0.56,
+ "fts_only": 0.735,
+ "n": 200,
+ "docs": 6194,
+ "core_docs_per_s": 73.9,
+ "speedup_vs_nomic": 64,
+ "query_p50_ms_core": 9.3,
+ "table_mb_f32": 89.4,
+ "table_mb_pca256_trit2bit": 1.86,
+ "PASS": false,
+ "bar": "hybrid_fts_core >= 0.775 AND >= 100x nomic docs/s"
+}

@@ -1,0 +1,13 @@
+{
+ "core_only": 0.565,
+ "fts_only": 0.735,
+ "hybrid_fts_core": 0.73,
+ "hybrid_fts_nomic": 0.95,
+ "val_cosine_to_nomic": 0.9886,
+ "nomic_only_reference": 0.685,
+ "bar": 0.775,
+ "gamma": 0.9,
+ "feature_dims": 6401,
+ "verdict": "FAIL",
+ "seconds": 150.9
+}

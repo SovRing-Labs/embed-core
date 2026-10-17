@@ -1,0 +1,2 @@
+Command: python3 -B checks/curriculum.py | Intel i5-8365U laptop | 2026-10-17 | clean staged tree
+curriculum-gate PASS: rise, no-rise, regression, low-n, missing, deterministic split

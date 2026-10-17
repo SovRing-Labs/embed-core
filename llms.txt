@@ -1,0 +1,21 @@
+# embed-core
+
+> Static token-table embedding, ternary readouts and curriculum regression gates.
+
+Setup: `git clone --depth 1 https://github.com/SovRing-Labs/embed-core && cd embed-core && python3 -B checks/curriculum.py` (expect: PASS).
+Status: pre-alpha, under development — read STATUS.md before relying on a number.
+Licence: PolyForm Small Business 1.0.0 OR PolyForm Noncommercial 1.0.0 + Free Trial (code); CC BY 4.0 (documents).
+
+## Docs
+- [README.md](https://raw.githubusercontent.com/SovRing-Labs/embed-core/main/README.md)
+- [STATUS.md](https://raw.githubusercontent.com/SovRing-Labs/embed-core/main/STATUS.md)
+- [suite.json](https://raw.githubusercontent.com/SovRing-Labs/embed-core/main/suite.json)
+- [TECHNICAL-DISCLOSURE.md](https://raw.githubusercontent.com/SovRing-Labs/embed-core/main/TECHNICAL-DISCLOSURE.md)
+- [PROVENANCE.md](https://raw.githubusercontent.com/SovRing-Labs/embed-core/main/PROVENANCE.md)
+- [LICENSING.md](https://raw.githubusercontent.com/SovRing-Labs/embed-core/main/LICENSING.md)
+- [DATA.md](https://raw.githubusercontent.com/SovRing-Labs/embed-core/main/DATA.md)
+- [CITATION.cff](https://raw.githubusercontent.com/SovRing-Labs/embed-core/main/CITATION.cff)
+- [AGENTS.md](https://raw.githubusercontent.com/SovRing-Labs/embed-core/main/AGENTS.md)
+
+## Optional
+- [SovRing umbrella (all repos, MCP setup)](https://github.com/SovRing-Labs/SovRing)
